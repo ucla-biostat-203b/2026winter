@@ -21,7 +21,7 @@ Phone: (310)794-7835\
 Email: <huazhou@ucla.edu>  
 
 Office hours:  
-- Lec 1: Tue, Thu 2pm-2:45pm @ CHS 21-254A (the hour before each lecture)  
+- Lec 1: Tue 6pm-7pm @ CHS 21-254A (the hour after each lecture)  
 - Lec 82 (MDSH): the hour after each lecture @ [Zoom](https://ucla.zoom.us/j/92818013711) or the class room, and timely help on Slack  
 
 ## TA team
