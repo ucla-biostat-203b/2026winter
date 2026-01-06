@@ -1,5 +1,5 @@
 ---
-title: "Lab 1: R, RStudio, Quarto, Git, SSH Keys, and Reproducing Course Materials"
+title: "Lab 1: R, Quarto, RStudio/Positron, Git, SSH Keys, and Reproducing Course Materials"
 subtitle: Biostat 203B
 author: "Dr. Hua Zhou @ UCLA"
 date: today
@@ -61,6 +61,11 @@ In RStudio Desktop, go to `Tools` -> `Global Options...` -> `General` -> `Basic`
 
 :::
 
+::: {.callout-tip}
+## Positron
+
+Adventurous ones are tried out [Positron](https://posit.co/download/positron/), which is a free and open-source IDE for R and Python developed by Posit (formerly RStudio). It has built-in support for Quarto and Git. The user interface is similar to RStudio Desktop.
+:::
 
 # Terminal and Bash shell
 
