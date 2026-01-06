@@ -60,15 +60,16 @@ If you put MIMIC data in Box and access it using `Box Drive` program on Windows,
 
 On your local machine: 
 
-- Clone the repository, create `develop` branch, where your work on solutions. Useful git commands:
+- Clone the repository, create `develop` branch, where your work on solutions. 
 
+Some useful git commands:
 ```{bash}
 #| eval: false
 
 # clone the project
-git clone git@github.com:[USERNAME]/biostat-203b-2026-winter.git
+git clone git@github.com:[USERNAME]/biostat-203b-2026-winter.git 203b-hw
 # enter project folder
-cd biostat-203b-2026-winter
+cd 203b-hw
 # what branches are there?
 git branch
 # create develop branch
@@ -79,10 +80,10 @@ git checkout develop
 mkdir hw1
 cd hw1
 # let's write solutions
-echo "sample solution" > hw1.Rmd
-echo "some bug" >> hw1.Rmd
+echo "sample solution" > hw1.qmd
+echo "some bug" >> hw1.qmd
 # commit the code
-git add hw1.Rmd
+git add hw1.qmd
 git commit -m "start working on problem #1"
 # push to remote repo
 git push
