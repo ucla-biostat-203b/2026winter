@@ -29,15 +29,15 @@ Office hours:
 - Lec 1
 
     Bowen Zhang <bowenzhangstats@ucla.edu>  
-    Office hours: ??? @ ???, and timely help on Slack
+    Office hours: Thursdays 4pm-5pm @ [LS 2349](https://sites.lifesci.ucla.edu/lscore-new/wp-content/uploads/sites/263/2020/08/Map-of-officer.png), and timely help on Slack
 
 - Lec 82 (MDSH)
 
     Tomoki Okuno <tomokiokuno0528@ucla.edu>  
-    Office hours: ??? @ [Zoom](https://ucla.zoom.us/j/93726996854), and timely help on Slack   
+    Office hours: Wednesdays 5pm-6pm @ [Zoom](https://ucla.zoom.us/j/93726996854), and timely help on Slack   
 
     Yucai Shao <yucais@ucla.edu>  
-    Office hours: ??? @ [Zoom](https://ucla.zoom.us/j/93726996854), and timely help on Slack   
+    Office hours: Fridays 5pm-6pm @ [Zoom](https://ucla.zoom.us/j/93726996854), and timely help on Slack   
 
 ## Course Description
 
