@@ -661,7 +661,11 @@ select(flights, 1:2:10)
 ```{r}
 select(flights, time_hour, air_time, everything())
 ```
- 
+or use `relocate` 
+```{r}
+relocate(flights, time_hour, air_time, .before = year)
+```
+
 #### Python (???)
 
 Not sure what's the optimal way to do this.
