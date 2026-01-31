@@ -249,4 +249,13 @@ Explain implications of MIMIC date shifting for time-based features and analyses
 
 ## Grading rubric for 212A (100 pts)
 
-- 
+- Clinical question & prediction framing (10 pts)  
+- Cohort construction validity for modeling (10 pts)
+- Preprocessing & feature engineering (15 pts)
+- Model set: at least 3 models of increasing complexity (15 pts)
+- Resampling & hyperparameter tuning (15 pts)
+- Train/test split design & leakage avoidance (10 pts)
+- Evaluation metrics, calibration, and model comparison (15 pts)
+- Interpretation of model behavior (10 pts)
+- Reproducibility & reporting quality (5 pts)
+- Limitations & responsible ML/ethics (5 pts)

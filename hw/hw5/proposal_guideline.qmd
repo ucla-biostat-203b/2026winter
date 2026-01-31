@@ -21,6 +21,8 @@ The main purpose of the proposal presentation is to brainstorm ideas and get fee
 
 You don't need to send slides ahead of time. Just bring it on the day of presentation (either on your laptop or a USB drive). You can use Quarto, PowerPoint, Google Slides, Keynote, or any other presentation software you are comfortable with.
 
+You may read the draft [guideline](https://ucla-biostat-203b.github.io/2026winter/hw/hw5/finalreport_guideline.html) for the final report. However, it is work in progress and likely to substantially. The presentation should focus on the key aspects of your project proposal as outlined below.
+
 ## Presentation
 
 Each team will give a 15-minute presentation on their final project proposal, followed by a 5-minute Q&A session. The presentation should cover at least the following aspects.
