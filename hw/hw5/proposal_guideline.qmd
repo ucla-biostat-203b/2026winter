@@ -67,7 +67,7 @@ For example: We will include adult patients (age >= 18) who underwent cardiac su
 
 ### Modeling approach
 
-What are the modeling approaches (at least 3) will you use? Why is are these approaches suitable for your prediction task?
+What are the modeling approaches (at least 3) will you use? Why are these approaches suitable for your prediction task?
 
 For example: We will use an elastic net regularized logistic regression as the baseline model, random forest, xgboost, and neural network. We may also try model stacking if time permits. We chose these models because they can handle high-dimensional data, capture complex relationships between features and the outcome, and are robust to overfitting.
 
