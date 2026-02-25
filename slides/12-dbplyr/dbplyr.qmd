@@ -283,7 +283,7 @@ Achieving this task under 3 seconds is impressive.
 How about BigQuery? We use the `bigrquery` package to connect to BigQuery and run the same query. BigQuery is able to achieve this task under 3 seconds. But this may not be fair. BigQuery may cache this particular query if it's been run before.
 ```{r}
 # BigQuery authentication using service account token
-bq_auth(path = "biostat-203b-2025-winter-4e58ec6e5579.json")
+bq_auth(path = "biostat-203b-2026-winter-92fefbfab477.json")
 ```
 
 ```{r}

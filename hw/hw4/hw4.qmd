@@ -41,7 +41,7 @@ Below is an outline of steps. In this homework, we exclusively work with the Big
 Authenticate with BigQuery using the service account token. Please place the service account token (shared via BruinLearn) in the working directory (same folder as your qmd file). Do **not** ever add this token to your Git repository. If you do so, you will lose 50 points.
 ```{r}
 # path to the service account token 
-satoken <- "biostat-203b-2025-winter-4e58ec6e5579.json"
+satoken <- "biostat-203b-2026-winter-92fefbfab477.json"
 # BigQuery authentication using service account
 bq_auth(path = satoken)
 ```
@@ -130,8 +130,10 @@ if (!dir.exists("mimiciv_shiny")) {
   dir.create("mimiciv_shiny")
 }
 # save the final tibble
-mimic_icu_cohort |>
-  write_rds("mimiciv_shiny/mimic_icu_cohort.rds", compress = "gz")
+if (exists("mimic_icu_cohort")) {
+  mimic_icu_cohort |>
+    write_rds("mimiciv_shiny/mimic_icu_cohort.rds", compress = "gz")
+}
 ```
 Close database connection and clear workspace.
 ```{r}
