@@ -1,6 +1,6 @@
 *XXX XXX*
 
-### Overall Grade: ???/280
+### Overall Grade: ???/300
 
 ### Quality of report: ??/10
 
@@ -12,7 +12,7 @@
 
 -   Is the report clear (whole sentences, typos, grammar)? Do readers have a clear idea what's going on and how results are produced by just reading the report? Take some points off if the solutions are too succinct to grasp, or there are too many typos/grammar. 
 
-### Completeness, correctness and efficiency of solution: ??/230
+### Completeness, correctness and efficiency of solution: ??/250
 
 - Q1 (??/50)
   
@@ -45,6 +45,8 @@
 - Q7 (??/30) Check the final number of rows and the first few rows of the final data frame.
 
 - Q8 (??/40) This question is open ended. Any graphical summaries are good. Since this question didn't explicitly ask for explanations, it's fine students don't give them. Students who give insights should be encouraged.
+
+- Q9 (??/20)
 	    
 ### Usage of Git: ??/10
 

@@ -1,6 +1,6 @@
 *XXX XXX*
 
-### Overall Grade: ???/250
+### Overall Grade: ???/270
 
 ### Late penalty
 
@@ -14,7 +14,7 @@
 
 -   Is the report clear (whole sentences, typos, grammar)? Do readers have a clear idea what's going on and how results are produced by just reading the report? Take some points off if the solutions are too succinct to grasp, or there are too many typos/grammar. 
 
-### Completeness, correctness and efficiency of solution: ??/200
+### Completeness, correctness and efficiency of solution: ??/220
 
 - Q1 (??/100)
 
@@ -27,6 +27,8 @@ Cohort in Q1.7 should match that in HW3.
 Q1.8 summaries should roughly match those given.
   
 - Q2 (??/100)
+
+- Q3 (??/20)
 
 ### Usage of Git: ??/10
 
