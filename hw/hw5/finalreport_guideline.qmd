@@ -1,6 +1,6 @@
 ---
 title: "Biostat 203B/212A Final Project: MIMIC-IV Machine Learning"
-subtitle: "End-to-end, reproducible, scalable ML pipeline in R"
+subtitle: "End-to-end, reproducible ML pipeline in R"
 author: "Drs. Hua Zhou and Jin Zhou"
 format:
   html:
@@ -19,233 +19,166 @@ format:
 
 ### Goal
 
-Build a **reproducible**, **scalable**, and **well-validated** machine learning model using **MIMIC-IV** to predict a clinically meaningful outcome, and communicate results in a **Quarto report** + a small **interactive Shiny deliverable**.
-
-### Outcomes
-
-Identify a clinically meaningful outcome to predict. Examples include (but are not limited to):  
-
-- **Prolonged ICU stay** (demo): We will practice in HW3-5 how to define this outcome and create a cohort. Your team will implement a similar pipeline for a different outcome of your choice.  
-- 30-day readmission after hospital discharge  
-- 30-day mortality after hospital admission  
-- 30-day mortality after hospital discharge  
-- In-hospital mortality   
-- ICU readmission within the hospitalization   
-- Discharge destination (multiclass)  
-- ...
+Build a **reproducible** and **well-validated** machine learning model using **MIMIC-IV** to predict a clinically meaningful outcome, and communicate results in a **Quarto report** and an **interactive Shiny deliverable**.
 
 ### Deliverables
 
-1. Quarto document and **rendered HTML report**.
+1. Individually written Quarto document and **rendered HTML report**.
 2. Meaningful commits in **GitHub repo** documenting the project progress.
-3. **Shiny app** (at least 2 tabs: cohort explorer + model results).
-
----
-
-## Clinical question & prediction framing
-
-### Clinical motivation
-
-Describe why this prediction task matters clinically or operationally.
-
-### Index time and prediction window
-
-Define:  
-
-- **Index time** (e.g., ICU admission time).
-- **Prediction window** (what information is allowed before prediction).
-- **Outcome definition** and any **exclusion criteria** (e.g., age < 18, missing identifiers).
-
----
-
-## Data sources & cohort construction
-
-### Required sources / tables
-
-You must use either:  
-
-- **BigQuery + dbplyr** (preferred for scalability), *or*
-- Local files using **Arrow/Parquet/DuckDB** strategies.
-
-List the specific MIMIC-IV tables used (e.g., `patients`, `admissions`, `icustays`, labs, vitals tables).
-
-### Cohort definition
-
-Document inclusion/exclusion and the unit of analysis (e.g., ICU-stay-level).
-
-### Feature blocks
-
-#### Demographics / admission context
-
-- age, sex, race/ethnicity (with transparent recoding), admission type, etc.
-
-#### Labs
-
-What lab values will you include? Give justification. 
-
-#### Vitals
-
-What patient vitals will you include? Give justification.
-
-### Cohort summary table
-
-Provide counts:  
-
-- number of patients
-- number of ICU stays
-- outcome prevalence
-- missingness summary for key predictors
-
----
-
-## Exploratory data analysis (EDA)
-
-### Required figure: patient-level trajectory
-
-Include at least one visualization showing a patient trajectory (e.g., ADT + ICU events or vitals trajectory).
-
-### Additional EDA
-
-- Outcome vs key predictors (plots)
-- Missingness patterns
-- Correlation/collinearity checks
-
----
-
-## Modeling plan
-
-### Train/test split
-
-- Describe split fraction and random seed.
-
-- Choose between **ICU-level slit** and **patient-level split**. How to avoid leakage across multiple ICU stays per patient?
-
-### Preprocessing
-
-Describe and implement:
-
-- Data harmonization strategy (unit conversion, outlier handling)
-- Missingness strategy (imputation and/or missing indicators)
-- Categorical encoding
-- Feature engineering (normalization, log transforms, nonlinear terms, etc)
-
-### Models (require at least 3)
-
-Include at least three ML models of increasing complexity:  
-
-1. **Baseline**: logistic regression (or multinomial if multiclass)
-2. **Regularized**: lasso/ridge/elastic net
-3. **Nonlinear**: random forest / XGBoost / GBM / neural network
-4. **Stacked model**.
-
-### Resampling & tuning (required)
-
-- CV setup (e.g., 5-fold). How to ensure reproducibility?
-
----
-
-## Evaluation & results
-
-### Metrics
-
-Choose suitable metrics to evaluate model performance on both CV and test set.
-
-- ROC AUC (binary) and/or appropriate multiclass AUC
-- PR AUC (if class imbalance)
-- Confusion-matrix-derived metrics at a chosen threshold
-- Calibration (calibration plot or Brier score)
-
-### Model comparison
-
-Provide a clear comparison table (or plot) across models (CV + test set).
-
-### Interpretation
-
-- Coefficients (for linear models)
-- Feature importance: Shapley values.
-
----
-
-## Scaling requirement
-
-Demonstrate **one** of the following and describe why it was needed:
-
-### Option A: Database-first scaling
-
-- Transform in BigQuery (dbplyr), `collect()` only final cohort.
-
-### Option B: HPC run (Hoffman2)
-
-- Submit a job for tuning or heavy compute; include job script and log.
-
-### Option C: Cloud VM (GCP)
-
-- Run expensive steps on a VM; include instance details and command log.
-
-### Compute log (required)
-
-Summarize what ran where:  
-- environment (local / BigQuery / HPC / cloud)
-- key commands
-- runtime/memory notes (if available)
-
----
-
-## Shiny app deliverable
-
-Your Shiny app must have **two tabs**:
-
-1. **Cohort Explorer**
-   - summaries + plots (demographics/labs/vitals + outcome)
-
-2. **Model Results**
-   - threshold slider + confusion matrix
-   - at least one performance plot (ROC or calibration)
-   - optional: “predict a single stay” demo
-
-Include:  
-
-- where the app code lives in the repo
-- how to run it
-
----
-
-## Limitations & ethics
-
-### Limitations
-
-Discuss:  
-
-- measurement issues, missingness, selection bias
-- label leakage risks and how you avoided them
-- generalizability
-
-### Ethics & responsible use
-
-Brief statement addressing:  
-
-- privacy and appropriate use
-- MIMIC credentialing context
-- consequences of errors (false positives/negatives)
-
-### Note on date shifting
-
-Explain implications of MIMIC date shifting for time-based features and analyses.
-
----
+3. **Shiny app** (at least 3 tabs: cohort explorer + patient trajectory + ML app).
+
+## Team presentation
+
+Each team signs up for a presentation slot at
+
+- Lec 82: [Google Calendar](https://calendar.app.google/7xihN3x1c2RVD8vw7) (navigate to Mar 8, 2026); or
+- Lec 1: [Google Calendar](https://calendar.app.google/wafUqyLKtshymKYo8) (navigate to Mar 10, 2026)
+
+The main purpose of the presentation is to brainstorm ideas, share (partial) results, and get feedback from instructors and classmates. Each team member must present; you can divide the presentation among team members as you see fit. The presentation will be graded solely on whether the student presented and participation in discussions.
+
+You don’t need to send slides ahead of time. Just bring it on the day of presentation on a USB drive; you will present using Dr. Hua Zhou’s laptop. You can use Quarto, PowerPoint, Google Slides, Keynote, or any other presentation software you are comfortable with.
+
+## Final report
+
+The final report is due **Mar 18, 2026 @ 11:59PM** (git tag time).
+
+1. Title Page
+
+- Project title (concise and informative)
+
+- Your name and UID
+
+- Your team members
+
+2. Abstract
+
+    Provide a succinct summary of your entire project (~250–300 words), including:
+
+    - Background - Context and why the problem matters
+    
+    - Objectives – What your project intends to investigate
+    
+    - Methods - Main approach and data sources
+    
+    - Results - Key findings
+    
+    - Conclusion - Implications and potential impact
+
+3. Introduction
+
+    Establish your project’s rationale and research gap.
+
+    3.1 Background
+
+    - Background
+        * Overview of the topic area
+        * Why it’s important or impactful
+        
+    - Literature Review
+
+    - Problem Statement
+         * What specific issue or question your project addresses
+    
+    - Objectives
+        * Clear and specific aims of the project
+        
+    - Project Aims/Hypotheses
+        * Clearly define your research objectives  
+        * What you expect to find or demonstrate
+        
+4. Methods
+
+    Describe exactly how you conducted your project so others could reproduce it.
+    
+    4.1 Data Source or Materials
+    
+    * Dataset(s) used (e.g., MIMIC-IV for healthcare)
+
+    * Inclusion/exclusion criteria if applicable
+    
+    * Strategies for handling big data: BigQuery/dbplyr or Arrow/Parquet/DuckDB
+    
+    * privacy and appropriate use and MIMIC credentialing context
+        
+    4.2 Variables / Features
+    
+    * What variables are included and why
+        
+    * How they were processed or transformed
+        
+    4.3 Analytical Approach / Modeling
+    
+    * Index time, prediction window, and outcome definition
+    
+    * Machine learning algorithms (require at least 3)
+        
+    * Software used (e.g., R packages)
+        
+    4.4 Model Evaluation
+    
+    * Performance metrics (e.g., ROC/AUC, accuracy)
+        
+    * Validation methods (train/test split, cross-validation, etc.)
+        
+5. Results
+
+    State your findings clearly and objectively. Provide tables and figures where appropriate.
+    
+    5.1 Cohort / Sample Characteristics
+    
+    * Description of your data (counts, demographics, etc.)
+        
+    5.2 Model Performance
+    
+    * Summary of main results (metrics, comparisons among models)
+        
+    5.3 Additional Analyses
+    
+    * Feature importance (Shapley values), calibration, etc.
+        
+6. Discussion
+
+    Interpret the results and place them in context.
+    
+    6.1 Summary of Findings
+    
+    * What the results mean and how they relate to your aims
+        
+    6.2 Comparison with Previous Work
+    
+    * How your findings align with or differ from others
+        
+    6.3 Strengths and Limitations
+    
+    * What worked well; what constraints or biases exist
+        
+    6.4 Implications
+    
+    * Practical, theoretical, or clinical applications of your findings
+    
+7. Conclusion
+
+    Wrap up with clear takeaways and next steps.
+    
+    * Recap main conclusions
+    * Significance and contributions
+    * Suggestions for future research or improvements
+    
+8. References
+
+    * List all sources cited in your paper
+    
+    * Use consistent citation formatting (e.g., APA, MLA, or journal style)
+    
+9. AI usage acknowledgement
 
 ## Grading rubric for 203B (100 pts)
 
 - Data pipeline & cohort correctness (20)
 - EDA + required trajectory visualization (10)
-- Modeling rigor (25)
-- Interpretation + limitations (10)
-- Scaling requirement + documentation (10)
-- Shiny app functionality and relevance (10)
-- Reproducibility + Git quality (10)
+- Shiny app functionality and relevance (30)
+- Reproducibility + Git quality (35)
 - Ethics & responsible reporting (5)
-
----
 
 ## Grading rubric for 212A (100 pts)
 
