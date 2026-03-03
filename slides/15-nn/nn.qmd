@@ -34,6 +34,8 @@ Credit: This note heavily uses material from
 
 - _Learning Deep Learning_ lectures by Dr. Qiyang Hu (UCLA Office of Advanced Research Computing): <https://github.com/huqy/deep_learning_workshops>
 
+- _Attention? Attention!_ by Lilian Weng (2018): <https://lilianweng.github.io/posts/2018-06-24-attention/>
+
 ## Overview
 
 - Neural networks became popular in the 1980s.
@@ -344,7 +346,7 @@ Schematic showing how a convolutional neural network classifies an image of a ti
 
 - We slide it around the input image, scoring for matches.
 
-- The scoring is done via **dot-products**, illustrated above.
+- The scoring is done via **dot-products**, illustrated below.
 $$
 \text{Input image} = \begin{pmatrix}
 a & b & c \\
@@ -515,7 +517,7 @@ Source: <http://cs231n.github.io/convolutional-networks/>
 
 ### ResNet
 
-[**ResNet**](https://arxiv.org/abs/1512.03385) secured 1st Position in ILSVRC and COCO 2015 competition with an error rate of 3.6% (Better than Human Performance !!!) Batch Normalization after every conv layer. It also uses Xavier initialization with SGD + Momentum. The learning rate is 0.1 and is divided by 10 as validation error becomes constant. Moreover, batch-size is 256 and weight decay is 1e-5. The important part is there is no dropout is used in ResNet.
+[**ResNet**](https://arxiv.org/abs/1512.03385) secured 1st Position in ILSVRC and COCO 2015 competition with an error rate of 3.6% (Better than Human Performance !!!) Batch Normalization after every conv layer. It also uses Xavier initialization with SGD + Momentum. The learning rate is 0.1 and is divided by 10 as validation error becomes constant. Moreover, batch-size is 256 and weight decay is 1e-5. The important part is that no dropout is used in ResNet.
 
 <p align="center">
 ![](./resnet.jpg){width=400px}
@@ -684,7 +686,306 @@ Depiction of a sequence of 20 words representing a single document: one-hot enco
 
 ## Transformers
 
-More recent large language models (LMMs) such at ChatGPT extensively use transformers, which are capable of capturing even longer memory than LSTM.
+More recent large language models (LLMs) such as ChatGPT extensively use **transformers**, which capture long-range dependencies *without* recurrent connections.
+
+### Big picture
+
+- RNN/LSTM process a sequence step-by-step; transformers process an entire sequence **in parallel**.
+- The key primitive is **attention**: each position can “look at” (i.e., borrow information from) other positions in the sequence.
+
+::: {#fig-transformer-big-picture}
+
+```{mermaid}
+%%| echo: false
+flowchart LR
+  A["Token sequence<br/>(w1,...,wL)"] --> B["Embeddings + Positional info"]
+  B --> C["Transformer blocks<br/>(Self-attention + FFN)"]
+  C --> D["Task head<br/>(classification / next token / seq2seq)"]
+```
+
+:::
+
+### Why attention? From encoder–decoder RNNs to dynamic context
+
+- In early **seq2seq** models, an **encoder** RNN reads the whole source sequence and compresses it into a *single* fixed-length **context vector** (a “thought vector”), and a **decoder** RNN generates the output from that context.
+- A key limitation: for long sequences, a single fixed-length context can become a bottleneck (the encoder may “forget” early information).
+
+::: {#fig-weng-seq2seq}
+
+![](./weng_figures/fig3_encoder-decoder-example.png){width=48%}
+
+Seq2seq encoder–decoder comparison. The encoder-decoder model, translating the sentence "she is eating a green apple" to Chinese. The visualization of both encoder and decoder is unrolled in time. Source: Lilian Weng (2018), [*Attention? Attention!*](https://lilianweng.github.io/posts/2018-06-24-attention/).
+
+:::
+
+- **Attention** fixes this by letting the decoder build a *new* context vector $c_t$ at each output step $t$, using a learned **soft alignment** over *all* encoder hidden states. 
+
+
+
+> Rather than building a single context vector out of the encoder’s last hidden state, the secret sauce invented by attention is to create shortcuts between the context vector and the entire source input. The weights of these shortcut connections are customizable for each output element. While the context vector has access to the entire input sequence, we don’t need to worry about forgetting. The alignment between the source and target is learned and controlled by the context vector. 
+
+- Essentially the context vector consumes three pieces of information:
+  + encoder hidden states;
+  + decoder hidden states;
+  + alignment between source and target.
+
+
+:::{#fig-weng-encoder-decoder-attention}
+
+![](./weng_figures/fig4_encoder-decoder-attention.png){width=50%}
+
+The encoder-decoder model with additive attention mechanism in Bahdanau et al., 2015.
+
+:::
+
+
+
+
+```{mermaid}
+%%| echo: false
+%%{init: {"theme":"neutral"}}%%
+%%{init: {"flowchart": {"htmlLabels": true}}}%%
+
+flowchart LR
+
+  subgraph E["Encoder (BiRNN / GRU / LSTM)"]
+    x1["x₁"] --> h1["h₁"]
+    x2["x₂"] --> h2["h₂"]
+    x3["…"]  --> hT["h<sub>n</sub>"]
+  end
+
+  subgraph AT["Attention (step t)"]
+    sPrev["s<sub>t-1</sub>"] --> score["score(s<sub>t-1</sub>, h<sub>i</sub>)"]
+    h1 --> score
+    h2 --> score
+    hT --> score
+    score --> soft["softmax over i"]
+    soft --> ct["c<sub>t</sub> = Σ<sub>i</sub> α<sub>t,i</sub> h<sub>i</sub>"]
+  end
+
+  subgraph D["Decoder (RNN / GRU / LSTM)"]
+    yPrev["y<sub>t-1</sub>"] --> dec["s<sub>t</sub> = f(s<sub>t-1</sub>, y<sub>t-1</sub>, c<sub>t</sub>)"]
+    ct --> dec
+    dec --> yOut["y<sub>t</sub>"]
+  end
+```
+
+### Definition
+
+Let the encoder produce hidden states $h_1,\ldots,h_n$ for a source sequence $(x_1,\ldots,x_n)$.
+At target step $t$, the decoder has a hidden state $s_{t-1}$ (from the previous step) and computes **alignment scores**
+$$
+e_{t,i} = \text{score}(s_{t-1}, h_i), \qquad i=1,\ldots,n.
+$$
+
+Convert scores into **attention weights** (a probability distribution over source positions):
+$$
+\alpha_{t,i} = \frac{\exp(e_{t,i})}{\sum_{i'=1}^n \exp(e_{t,i'})}.
+$$
+
+Then build the **context vector** as a weighted sum:
+$$
+c_t = \sum_{i=1}^n \alpha_{t,i} h_i.
+$$
+
+A helpful way to read this:
+
+- $\alpha_{t,i}$ is “how much should output position $t$ attend to source position $i$?”
+- The matrix $(\alpha_{t,i})$ across all $t$ and $i$ is an **alignment matrix** that can be visualized as a heatmap.
+
+![Alignment matrix (attention weights) learned by Bahdanau-style attention. Source: Lilian Weng (2018), citing Bahdanau et al. (2015).](./weng_figures/fig5_alignment-heatmap.png){#fig-weng-alignment width=50%}
+
+### Common alignment score functions (same idea, different parameterizations)
+
+These are plug-in choices for $\text{score}(\cdot,\cdot)$:
+
+- **Additive / concat (Bahdanau):**
+$$
+  \text{score}(s,h) = v_a^\top \tanh\!\big(W_a [s;h]\big).
+$$
+- **General (Luong):**
+$$
+  \text{score}(s,h) = s^\top W_a h.
+$$
+- **Dot-product:**
+$$
+  \text{score}(s,h) = s^\top h.
+$$
+- **Scaled dot-product:**
+$$
+  \text{score}(s,h) = \frac{s^\top h}{\sqrt{d}},
+$$
+  where $d$ is the hidden dimension. The scaling helps keep the softmax from saturating (i.e., avoids extremely small gradients) when $d$ is large.
+
+
+### Embeddings and positional information
+
+- Let the input be token IDs $w_1,\ldots,w_L$ from a vocabulary of size $V$.
+- A (learned or pretrained) embedding matrix $E \in \mathbb{R}^{V \times d}$ maps each token ID to a vector:
+$$
+  x_\ell = E[w_\ell] \in \mathbb{R}^d.
+$$
+- Unlike RNNs, self-attention does not “know” order by default (it is permutation-invariant), so we inject position information:
+  - **Learned positional embeddings** $P[\ell]$, or
+  - **Sinusoidal positional encodings** (fixed functions of $\ell$).
+- The typical input to the first transformer block is
+$$
+  z_\ell = x_\ell + p_\ell.
+$$
+
+```{mermaid}
+%%| echo: false
+flowchart LR
+  w["Token IDs"] --> e["Embedding lookup E[w]"]
+  pos["Positions 1..L"] --> p["Positional embedding/encoding p"]
+  e --> add["(+)"]
+  p --> add
+  add --> z["z1..zL"]
+```
+
+### Attention: the intuition
+
+- Attention computes a **weighted average** of information (values) from other positions.
+- The weights are data-adaptive: they depend on how well a **query** matches **keys**.
+
+**Query / Key / Value idea** (for each position $\ell$):
+
+- $q_\ell$: “what I am looking for”
+- $k_t$: “what I contain” (for position $t$)
+- $v_t$: “the content to pass along” (for position $t$)
+
+Each position $\ell$ forms scores $s_{\ell t}$ comparing $q_\ell$ to $k_t$, converts them to weights $\alpha_{\ell t}$ (via softmax), then outputs
+$$
+\text{attn}(\ell) = \sum_{t=1}^L \alpha_{\ell t} v_t.
+$$
+
+If you want one compact formula for **scaled dot-product attention** (applied to a whole sequence):
+$$
+\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V.
+$$
+
+- Why the scale $1/\sqrt{d_k}$? Dot products grow with dimension, which can make softmax saturate (tiny gradients). Scaling keeps gradients usable.
+
+
+### Self-attention vs cross-attention
+
+- **Self-attention:** $Q,K,V$ all come from the same sequence (each token attends to other tokens in the same sequence).
+- **Cross-attention:** $Q$ comes from one sequence (e.g., decoder tokens) and $K,V$ come from another (e.g., encoder outputs).
+
+![Example of self-attention: the current word is red; blue shading indicates attention strength to other words. Source: Lilian Weng (2018), citing Cheng et al. (2016).](./weng_figures/fig6_self-attention-example.png){#fig-weng-self-attn-example width=65%}
+
+
+### Multi-head attention 
+
+- Instead of one attention operation, transformers use multiple “heads.”
+- Intuition: each head can learn a different relation pattern (e.g., local context, long-range dependency, syntax-like cues).
+
+
+A standard definition (writing attention in matrix form):
+
+- First form query/key/value matrices via learned linear projections:
+$$
+  Q = ZW^Q,\quad K = ZW^K,\quad V = ZW^V.
+$$
+- One attention “head” is:
+$$
+  \text{head}_r = \text{Attention}(QW_r^Q,\;KW_r^K,\;VW_r^V).
+$$
+- Then combine $H$ heads:
+$$
+  \text{MultiHead}(Q,K,V) = \text{Concat}(\text{head}_1,\ldots,\text{head}_H)W^O.
+$$
+
+(Interpretation: different heads can focus on different *types* of relations.)
+
+![Multi-head scaled dot-product attention (block diagram). Source: Lilian Weng (2018), citing Vaswani et al. (2017).](./weng_figures/fig14_multi-head-attention.png){#fig-weng-mha width=45%}
+
+### Encoder and decoder blocks (what’s inside a transformer)
+
+**Encoder block** (used in encoder-only models and the encoder part of seq2seq):
+
+- Self-attention
+- Position-wise feed-forward network (FFN)
+- Residual connections + layer normalization (“Add & Norm”)
+
+A typical **position-wise FFN** is just a 2-layer MLP applied to each position independently:
+$$
+\text{FFN}(x) = W_2\,\sigma(W_1 x + b_1) + b_2,
+$$
+where $\sigma$ is usually ReLU or GELU. The same FFN parameters are reused for every token position.
+
+
+```{mermaid}
+%%| echo: false
+flowchart LR
+  z[z] --> sa[Multi-head<br/>Self-attention]
+  sa --> add1[(Add & Norm)]
+  add1 --> ffn[Feed-forward<br/>network]
+  ffn --> add2[(Add & Norm)]
+  add2 --> out[Encoder output]
+```
+
+**Decoder block** (used for generation and seq2seq decoders):
+
+- **Masked** self-attention (cannot look at future tokens)
+- Cross-attention to encoder outputs (for seq2seq)
+- FFN + residual + normalization
+
+```{mermaid}
+%%| echo: false
+flowchart LR
+  y["y (shifted targets)"] --> msa["Masked self-attention"]
+  msa --> add1[(Add & Norm)]
+  add1 --> ca["Cross-attention<br/>(to encoder)"]
+  ca --> add2[(Add & Norm)]
+  add2 --> ffn["Feed-forward<br/>network"]
+  ffn --> add3[(Add & Norm)]
+  add3 --> out["Decoder output"]
+```
+
+::: {#fig-weng-transformer-blocks fig-cap="Canonical Transformer encoder and decoder blocks (for reference). Source: Lilian Weng (2018), citing Vaswani et al. (2017)."}
+![](./weng_figures/fig15_transformer-encoder.png){width=38%}
+![](./weng_figures/fig16_transformer-decoder.png){width=38%}
+:::
+
+### Encoder–decoder: how seq2seq works (translation-style)
+
+- The **encoder** reads the full source sequence and produces contextual representations (a “memory”).
+- The **decoder** generates the target sequence one token at a time.
+  - During training, we feed in the true previous tokens (**teacher forcing**) as “shifted targets.”
+  - During generation, we feed the model’s own previous predictions.
+
+```{mermaid}
+%%| echo: false
+flowchart LR
+  src["Source tokens"] --> enc["Encoder stack"]
+  enc --> mem["Encoder states"]
+  tgt["Target tokens<br/>(shifted)"] --> dec["Decoder stack"]
+  mem --> dec
+  dec --> out["Next-token<br/>probabilities"]
+```
+
+### Masking (two common masks)
+
+- **Padding mask:** ignore padded tokens introduced by truncation/padding.
+- **Causal mask (decoder):** prevent the model from seeing “future” tokens when predicting the next token.
+
+### Transformer “families” you will see
+
+- **Encoder-only:** good for understanding/classification tasks (e.g., BERT-like).
+- **Decoder-only:** good for next-token prediction and generation (e.g., GPT-like).
+- **Encoder–decoder:** good for seq2seq tasks (translation/summarization; T5-like).
+
+![The full Transformer architecture (encoder–decoder). Source: Lilian Weng (2018), citing Vaswani et al. (2017).](./weng_figures/fig17_transformer-architecture.png){#fig-weng-transformer-arch width=95%}
+
+### Why transformers usually beat RNN/LSTM at long context
+
+- **Direct connections:** any token can attend to any other token in one step (no need to pass through $L$ recurrent steps).
+- **Stable optimization:** residual connections give gradient “shortcuts.”
+- **Parallelization:** training is much faster on modern hardware.
+- Trade-off: vanilla attention is $\mathcal{O}(L^2)$ in sequence length; many variants exist to scale attention to longer sequences.
+
+### Further reading
 
 - Visual Guide to Transformer Neural Networks (Youtube)  
     - [Episode 1: Position Embeddings](https://youtu.be/dichIcUZfOw)  
@@ -766,7 +1067,7 @@ $$
 
 - CNNs have had enormous successes in image classification and modeling, and are starting to be used in medical diagnosis. Examples include digital mammography, ophthalmology, MRI scans, and digital X-rays.
 
-- RNNs have had big wins in speech modeling, language translation, and forecasting.
+- RNNs and transformers have had big wins in speech modeling, language translation, and forecasting.
 
 - Often the big successes occur when the signal to noise ratio is high, e.g., image recognition and language translation. Datasets are large, and overfitting is not a big problem.
 
